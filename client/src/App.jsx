@@ -1,10 +1,13 @@
 import { Route,Routes } from 'react-router'
+import Landing from './pages/Landing'
 
 const App = () => {
   return (
-    <div>
-      <h1 className='text-7xl text-red-500'>mindtrace</h1>
-    </div>
+    <>
+      <Routes>
+        <Route path='/' element={<Landing />} />
+      </Routes>
+    </>
   )
 }
 
