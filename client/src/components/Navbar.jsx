@@ -1,152 +1,180 @@
-import React from 'react';
-import { Link } from 'react-router';
-import { Menu, X, ArrowRight } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Menu, X, ChevronRight } from 'lucide-react';
+import gsap from 'gsap';
 
 const Navbar = () => {
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const menuRef = useRef(null);
+  const menuItemsRef = useRef([]);
+  const menuOverlayRef = useRef(null);
+
+  // Handle scroll effect
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Handle menu animation
+  useEffect(() => {
+    const menu = menuRef.current;
+    const overlay = menuOverlayRef.current;
+    const items = menuItemsRef.current;
+
+    if (isMenuOpen) {
+      // Open animation
+      gsap.to(overlay, {
+        opacity: 1,
+        duration: 0.3,
+        pointerEvents: 'auto',
+        ease: 'power2.out'
+      });
+      
+      gsap.to(menu, {
+        x: 0,
+        duration: 0.5,
+        ease: 'power3.out'
+      });
+
+      gsap.fromTo(items, 
+        { x: 50, opacity: 0 },
+        {
+          x: 0,
+          opacity: 1,
+          duration: 0.4,
+          stagger: 0.1,
+          delay: 0.2,
+          ease: 'power2.out'
+        }
+      );
+      
+      // Prevent body scroll
+      document.body.style.overflow = 'hidden';
+    } else {
+      // Close animation
+      gsap.to(overlay, {
+        opacity: 0,
+        duration: 0.3,
+        pointerEvents: 'none',
+        ease: 'power2.in'
+      });
+
+      gsap.to(menu, {
+        x: '100%',
+        duration: 0.5,
+        ease: 'power3.inOut'
+      });
+      
+      // Restore body scroll
+      document.body.style.overflow = 'unset';
+    }
+  }, [isMenuOpen]);
+
+  const navLinks = [
+    { name: 'Overview', href: '#overview' },
+    { name: 'Features', href: '#features' },
+    { name: 'Specs', href: '#support' },
+  ];
+
+  const addToRefs = (el, index) => {
+    if (el) {
+      menuItemsRef.current[index] = el;
+    }
+  };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/50 backdrop-blur-md">
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 group">
-            <span className="font-semibold text-2xl text-gray-900 tracking-tight">MindTrace</span>
-          </Link>
-          
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            <a 
-              href="#overview" 
-              className="text-gray-700 hover:text-gray-900 transition-colors text-md font-medium"
-            >
-              Overview
+    <>
+      <nav 
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 py-6 ${
+          scrolled || isMenuOpen 
+            ? 'bg-white/50 backdrop-blur-md' 
+            : 'bg-transparent'
+        }`}
+      >
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="flex items-center justify-between">
+            {/* Logo */}
+            <a href="#" className="flex items-center gap-2 group z-50 relative">
+              <span className={`font-bold text-xl tracking-tight transition-colors duration-300 ${
+                isMenuOpen ? 'text-gray-900' : 'text-gray-900'
+              }`}>
+                MindTrace
+              </span>
             </a>
-            <a 
-              href="#features" 
-              className="text-gray-700 hover:text-gray-900 transition-colors text-md font-medium"
-            >
-              Features
-            </a>
-            <a 
-              href="#support" 
-              className="text-gray-700 hover:text-gray-900 transition-colors text-md font-medium"
-            >
-              Support
-            </a>
-            <button className="bg-gray-900 text-white px-6 py-2.5 rounded-full hover:bg-gray-800 transition-all font-medium text-md">
-              Join Now
-            </button>
-          </div>
 
-          {/* Mobile menu button - Clean and minimal */}
-          <div className="md:hidden">
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center gap-8">
+              <div className="flex items-center gap-6">
+                {navLinks.map((link) => (
+                  <a 
+                    key={link.name}
+                    href={link.href}
+                    className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+                  >
+                    {link.name}
+                  </a>
+                ))}
+              </div>
+              <button className="bg-gray-900 text-white px-6 py-2.5 rounded-full text-sm font-medium hover:bg-gray-800 transition-all hover:shadow-lg hover:scale-105 active:scale-95">
+                Get Started
+              </button>
+            </div>
+
+            {/* Mobile Menu Button */}
             <button 
-              onClick={() => setIsOpen(!isOpen)} 
-              className="relative p-2 hover:bg-gray-100 rounded-lg transition-all duration-200 active:scale-95"
+              className="md:hidden relative z-50 p-2 -mr-2 text-gray-900 hover:bg-gray-100 rounded-full transition-colors"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
               aria-label="Toggle menu"
             >
-              <div className={`transition-all duration-300 ${isOpen ? 'rotate-90' : 'rotate-0'}`}>
-                {isOpen ? (
-                  <X className="h-6 w-6 text-gray-900" />
-                ) : (
-                  <Menu className="h-6 w-6 text-gray-900" />
-                )}
-              </div>
+              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
           </div>
         </div>
-      </div>
+      </nav>
 
-      {/* Full-screen Mobile Menu */}
+      {/* Mobile Menu Overlay */}
       <div 
-        className={`md:hidden fixed inset-0 top-20 bg-white z-50 transition-all duration-500 ease-out ${
-          isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
-        }`}
+        ref={menuOverlayRef}
+        className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 opacity-0 pointer-events-none md:hidden"
+        onClick={() => setIsMenuOpen(false)}
+      />
+
+      {/* Mobile Menu Sidebar */}
+      <div 
+        ref={menuRef}
+        className="fixed top-0 right-0 bottom-0 w-[80%] max-w-sm bg-white z-40 shadow-2xl transform translate-x-full md:hidden flex flex-col"
       >
-        {/* Subtle gradient background */}
-        <div className="absolute inset-0 bg-linear-to-br from-gray-50 via-white to-indigo-50/30" />
-        
-        {/* Content Container */}
-        <div className="relative h-full flex flex-col px-8 py-12">
-          {/* Navigation Links */}
-          <nav className="flex-1 flex flex-col justify-center space-y-2">
-            <a 
-              href="#overview"
-              className={`group relative py-6 text-gray-900 transition-all duration-300 ${
-                isOpen ? 'animate-slideInUp' : ''
-              }`}
-              style={{ animationDelay: '50ms' }}
-              onClick={() => setIsOpen(false)}
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-4xl font-bold tracking-tight group-hover:translate-x-2 transition-transform duration-300">
-                  Overview
-                </span>
-                <ArrowRight className="h-6 w-6 text-indigo-500 opacity-0 group-hover:opacity-100 transform translate-x-0 group-hover:translate-x-1 transition-all duration-300" />
-              </div>
-              <div className="h-px bg-linear-to-r from-gray-200 to-transparent mt-6" />
-            </a>
-            
-            <a 
-              href="#features"
-              className={`group relative py-6 text-gray-900 transition-all duration-300 ${
-                isOpen ? 'animate-slideInUp' : ''
-              }`}
-              style={{ animationDelay: '100ms' }}
-              onClick={() => setIsOpen(false)}
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-4xl font-bold tracking-tight group-hover:translate-x-2 transition-transform duration-300">
-                  Features
-                </span>
-                <ArrowRight className="h-6 w-6 text-indigo-500 opacity-0 group-hover:opacity-100 transform translate-x-0 group-hover:translate-x-1 transition-all duration-300" />
-              </div>
-              <div className="h-px bg-linear-to-r from-gray-200 to-transparent mt-6" />
-            </a>
-            
-            <a 
-              href="#support"
-              className={`group relative py-6 text-gray-900 transition-all duration-300 ${
-                isOpen ? 'animate-slideInUp' : ''
-              }`}
-              style={{ animationDelay: '150ms' }}
-              onClick={() => setIsOpen(false)}
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-4xl font-bold tracking-tight group-hover:translate-x-2 transition-transform duration-300">
-                  Support
-                </span>
-                <ArrowRight className="h-6 w-6 text-indigo-500 opacity-0 group-hover:opacity-100 transform translate-x-0 group-hover:translate-x-1 transition-all duration-300" />
-              </div>
-              <div className="h-px bg-linear-to-r from-gray-200 to-transparent mt-6" />
-            </a>
-          </nav>
-          
-          {/* Bottom CTA */}
-          <div 
-            className={`space-y-4 ${
-              isOpen ? 'animate-slideInUp' : ''
-            }`}
-            style={{ animationDelay: '200ms' }}
-          >
-            <button 
-              className="w-full bg-gray-900 text-white px-8 py-5 rounded-full font-semibold text-lg transition-all duration-300 hover:bg-gray-800 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl"
-              onClick={() => setIsOpen(false)}
-            >
-              Join the Waitlist
-            </button>
-            
-            {/* Decorative indicator */}
-            <div className="flex justify-center gap-2 pt-2">
-              <div className="w-2 h-2 rounded-full bg-indigo-500" />
-              <div className="w-2 h-2 rounded-full bg-gray-300" />
-              <div className="w-2 h-2 rounded-full bg-gray-300" />
+        <div className="flex-1 px-8 pt-28 pb-8 flex flex-col gap-8">
+          <div className="flex flex-col gap-6">
+            {navLinks.map((link, index) => (
+              <a 
+                key={link.name}
+                href={link.href}
+                ref={(el) => addToRefs(el, index)}
+                onClick={() => setIsMenuOpen(false)}
+                className="text-2xl font-semibold text-gray-900 flex items-center justify-between group"
+              >
+                {link.name}
+                <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-indigo-600 group-hover:translate-x-1 transition-all" />
+              </a>
+            ))}
+          </div>
+
+          <div ref={(el) => addToRefs(el, navLinks.length)} className="mt-auto">
+            <div className="p-6 bg-gray-50 rounded-2xl border border-gray-100">
+              <h4 className="font-semibold text-gray-900 mb-2">Ready to start?</h4>
+              <p className="text-sm text-gray-500 mb-4">Join the waitlist and be the first to experience the future.</p>
+              <button className="w-full bg-gray-900 text-white px-6 py-3 rounded-xl font-medium hover:bg-gray-800 transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2">
+                Join Waitlist
+              </button>
             </div>
           </div>
         </div>
       </div>
-    </nav>
+    </>
   );
 };
 
