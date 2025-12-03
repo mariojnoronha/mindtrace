@@ -1,29 +1,13 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
 import { Search, Grid, List, Plus, X, Upload, Phone, Mail, Trash2, Edit2, Eye } from 'lucide-react';
-import gsap from 'gsap';
 
 const ContactsDirectory = () => {
-  const mainRef = useRef(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
   const [selectedRelationship, setSelectedRelationship] = useState('all');
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedContact, setSelectedContact] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
-
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.from('.contact-card', {
-        y: 30,
-        opacity: 0,
-        duration: 0.5,
-        stagger: 0.08,
-        ease: 'power3.out'
-      });
-    }, mainRef);
-
-    return () => ctx.revert();
-  }, [viewMode]);
 
   const contacts = [
     {
@@ -454,7 +438,7 @@ const ContactsDirectory = () => {
   );
 
   return (
-    <div ref={mainRef} className="p-6 lg:p-8 max-w-[1600px] mx-auto">
+    <div className="p-6 lg:p-8 max-w-[1600px] mx-auto">
       {/* Header */}
       <div className="mb-8 flex items-center justify-between">
         <div>
@@ -468,7 +452,7 @@ const ContactsDirectory = () => {
         <button
           onClick={() => setShowAddModal(true)}
           className="px-6 py-3 bg-gray-900 text-white rounded-xl font-medium hover:bg-gray-800
-            transition-all duration-200 flex items-center gap-2 hover:scale-105 active:scale-95 shadow-lg"
+            transition-all duration-200 flex items-center gap-2 shadow-lg"
         >
           <Plus className="h-5 w-5" />
           Add Contact
@@ -537,7 +521,7 @@ const ContactsDirectory = () => {
           {filteredContacts.map((contact) => (
             <div
               key={contact.id}
-              className="contact-card bg-white rounded-2xl border border-gray-200 p-6 hover:shadow-lg
+              className="bg-white rounded-2xl border border-gray-200 p-6 hover:shadow-lg
                 transition-all duration-300 cursor-pointer group"
               onClick={() => {
                 setSelectedContact(contact);
@@ -545,7 +529,7 @@ const ContactsDirectory = () => {
               }}
             >
               <div className="flex flex-col items-center text-center mb-4">
-                <div className={`w-20 h-20 rounded-full bg-gradient-to-br from-${contact.color}-400 to-${contact.color}-600 flex items-center justify-center text-white font-semibold text-2xl mb-4 group-hover:scale-110 transition-transform`}>
+                <div className={`w-20 h-20 rounded-full bg-gradient-to-br from-${contact.color}-400 to-${contact.color}-600 flex items-center justify-center text-white font-semibold text-2xl mb-4`}>
                   {contact.avatar}
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors">
@@ -578,7 +562,7 @@ const ContactsDirectory = () => {
           {filteredContacts.map((contact) => (
             <div
               key={contact.id}
-              className="contact-card bg-white rounded-2xl border border-gray-200 p-6 hover:shadow-lg
+              className="bg-white rounded-2xl border border-gray-200 p-6 hover:shadow-lg
                 transition-all duration-300 cursor-pointer group"
               onClick={() => {
                 setSelectedContact(contact);

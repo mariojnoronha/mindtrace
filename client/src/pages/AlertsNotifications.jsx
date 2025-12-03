@@ -1,25 +1,9 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
 import { Bell, AlertCircle, Info, AlertTriangle, CheckCircle, X, Filter } from 'lucide-react';
-import gsap from 'gsap';
 
 const AlertsNotifications = () => {
-  const mainRef = useRef(null);
   const [selectedSeverity, setSelectedSeverity] = useState('all');
   const [selectedAlert, setSelectedAlert] = useState(null);
-
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.from('.alert-item', {
-        x: -30,
-        opacity: 0,
-        duration: 0.4,
-        stagger: 0.05,
-        ease: 'power3.out'
-      });
-    }, mainRef);
-
-    return () => ctx.revert();
-  }, []);
 
   const alerts = [
     {
@@ -132,7 +116,7 @@ const AlertsNotifications = () => {
   );
 
   return (
-    <div ref={mainRef} className="p-6 lg:p-8 max-w-[1600px] mx-auto">
+    <div className="p-6 lg:p-8 max-w-[1600px] mx-auto">
       <div className="mb-8">
         <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
           Alerts & Notifications
@@ -176,7 +160,7 @@ const AlertsNotifications = () => {
           return (
             <div
               key={alert.id}
-              className={`alert-item bg-white rounded-2xl border-2 p-6 transition-all duration-300 cursor-pointer hover:shadow-lg ${
+              className={`bg-white rounded-2xl border-2 p-6 transition-all duration-300 cursor-pointer hover:shadow-lg ${
                 alert.read ? 'border-gray-200 opacity-60 hover:opacity-100' : `${config.border}`
               }`}
               onClick={() => setSelectedAlert(alert)}

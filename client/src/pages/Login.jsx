@@ -1,47 +1,18 @@
-import { useState, useLayoutEffect, useRef } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { ArrowRight, Mail, Lock, Eye, EyeOff } from 'lucide-react';
-import gsap from 'gsap';
 import googleLogo from '../assets/google.png';
 
 const Login = () => {
-  const containerRef = useRef(null);
-  const formRef = useRef(null);
-  const imageRef = useRef(null);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
-  useLayoutEffect(() => {
-    const ctx = gsap.context(() => {
-      // Image animation
-      gsap.from(imageRef.current, {
-        x: -50,
-        opacity: 0,
-        duration: 1.2,
-        ease: 'power3.out'
-      });
-
-      // Form animation
-      gsap.from(formRef.current.children, {
-        y: 30,
-        opacity: 0,
-        duration: 0.8,
-        stagger: 0.1,
-        delay: 0.3,
-        ease: 'power2.out'
-      });
-    }, containerRef);
-
-    return () => ctx.revert();
-  }, []);
-
   return (
-    <div ref={containerRef} className="min-h-screen flex bg-white">
+    <div className="min-h-screen flex bg-white">
       {/* Left Side - Visual */}
       <div className="hidden lg:flex w-1/2 bg-gray-900 relative overflow-hidden">
         <div className="absolute inset-0 bg-linear-to-br from-indigo-900/40 to-purple-900/40 z-10" />
-        <img 
-          ref={imageRef}
+        <img
           src="https://images.unsplash.com/photo-1572635196237-14b3f281503f?q=80&w=2080&auto=format&fit=crop" 
           alt="Abstract technology" 
           className="absolute inset-0 w-full h-full object-cover opacity-60"
@@ -56,7 +27,7 @@ const Login = () => {
 
       {/* Right Side - Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8 lg:p-24">
-        <div ref={formRef} className="w-full max-w-md space-y-8">
+        <div className="w-full max-w-md space-y-8">
           <div className="text-center lg:text-left">
             <p onClick={() => navigate('/')} className="cursor-pointer inline-block text-4xl font-bold text-gray-900 mb-2">MindTrace</p>
             <h1 className="text-3xl font-bold text-gray-900 mt-4">Sign in to your account</h1>
@@ -132,7 +103,7 @@ const Login = () => {
 
             <button
               type="submit"
-              className="w-full flex justify-center items-center gap-2 py-3.5 px-4 border border-transparent rounded-xl shadow-lg text-sm font-medium text-white bg-gray-900 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl active:scale-[0.98] relative overflow-hidden group"
+              className="w-full flex justify-center items-center gap-2 py-3.5 px-4 border border-transparent rounded-xl shadow-lg text-sm font-medium text-white bg-gray-900 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-all duration-300 hover:shadow-xl relative overflow-hidden group"
             >
               <span className="relative z-10 flex items-center gap-2">
                 Sign in
@@ -153,7 +124,7 @@ const Login = () => {
             </div>
 
             <div className="mt-6">
-              <button className="w-full inline-flex justify-center items-center py-2.5 px-4 border border-gray-300 rounded-xl shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-100 hover:border-gray-400 hover:text-gray-700 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg active:scale-[0.98]">
+              <button className="w-full inline-flex justify-center items-center py-2.5 px-4 border border-gray-300 rounded-xl shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-100 hover:border-gray-400 hover:text-gray-700 transition-all duration-300 hover:shadow-lg">
                 <img src={googleLogo} alt="Google" className="h-5 w-5" />
                 <span className="ml-2">Sign in with Google</span>
               </button>

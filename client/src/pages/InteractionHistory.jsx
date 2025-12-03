@@ -1,27 +1,11 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
 import { Search, Filter, Download, X, MapPin, Clock, Star } from 'lucide-react';
-import gsap from 'gsap';
 
 const InteractionHistory = () => {
-  const mainRef = useRef(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedMood, setSelectedMood] = useState('all');
   const [selectedInteraction, setSelectedInteraction] = useState(null);
   const [starredOnly, setStarredOnly] = useState(false);
-
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.from('.interaction-card', {
-        y: 30,
-        opacity: 0,
-        duration: 0.5,
-        stagger: 0.1,
-        ease: 'power3.out'
-      });
-    }, mainRef);
-
-    return () => ctx.revert();
-  }, []);
 
   const interactions = [
     {
@@ -162,7 +146,7 @@ const InteractionHistory = () => {
   };
 
   return (
-    <div ref={mainRef} className="p-6 lg:p-8 max-w-[1600px] mx-auto">
+    <div className="p-6 lg:p-8 max-w-[1600px] mx-auto">
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
@@ -223,7 +207,7 @@ const InteractionHistory = () => {
           <button
             onClick={handleExport}
             className="px-6 py-3 bg-gray-900 text-white rounded-xl font-medium hover:bg-gray-800
-              transition-all duration-200 flex items-center gap-2 hover:scale-105 active:scale-95"
+              transition-all duration-200 flex items-center gap-2"
           >
             <Download className="h-5 w-5" />
             Export
@@ -236,7 +220,7 @@ const InteractionHistory = () => {
         {filteredInteractions.map((interaction) => (
           <div
             key={interaction.id}
-            className="interaction-card bg-white rounded-2xl border border-gray-200 overflow-hidden
+            className="bg-white rounded-2xl border border-gray-200 overflow-hidden
               hover:shadow-lg transition-all duration-300 cursor-pointer group"
             onClick={() => setSelectedInteraction(interaction)}
           >

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Calendar, Plus, Clock, Pill, Utensils, Activity, Droplets, MessageSquare, X } from 'lucide-react';
+import { Calendar, Plus, Clock, Pill, Utensils, Activity, Droplets, X } from 'lucide-react';
 
 const RemindersCalendar = () => {
   const [showAddModal, setShowAddModal] = useState(false);
@@ -10,7 +10,6 @@ const RemindersCalendar = () => {
     { id: 'meal', label: 'Meal', icon: Utensils, color: 'emerald' },
     { id: 'activity', label: 'Activity', icon: Activity, color: 'purple' },
     { id: 'hydration', label: 'Hydration', icon: Droplets, color: 'cyan' },
-    { id: 'message', label: 'Message', icon: MessageSquare, color: 'indigo' },
   ];
 
   const reminders = [
@@ -40,7 +39,7 @@ const RemindersCalendar = () => {
         <button
           onClick={() => setShowAddModal(true)}
           className="px-6 py-3 bg-gray-900 text-white rounded-xl font-medium hover:bg-gray-800
-            transition-all duration-200 flex items-center gap-2 hover:scale-105 active:scale-95 shadow-lg"
+            transition-all duration-200 flex items-center gap-2 shadow-lg"
         >
           <Plus className="h-5 w-5" />
           Add Reminder
@@ -100,7 +99,7 @@ const RemindersCalendar = () => {
       </div>
 
       {/* Reminder Types Grid */}
-      <div className="grid md:grid-cols-5 gap-4">
+      <div className="grid md:grid-cols-4 gap-4">
         {reminderTypes.map((type) => {
           const Icon = type.icon;
           return (
@@ -108,7 +107,7 @@ const RemindersCalendar = () => {
               key={type.id}
               className="bg-white rounded-2xl border border-gray-200 p-6 text-center hover:shadow-lg transition-all cursor-pointer group"
             >
-              <div className={`w-14 h-14 mx-auto mb-3 rounded-xl bg-${type.color}-100 text-${type.color}-600 flex items-center justify-center group-hover:scale-110 transition-transform`}>
+              <div className={`w-14 h-14 mx-auto mb-3 rounded-xl bg-${type.color}-100 text-${type.color}-600 flex items-center justify-center`}>
                 <Icon className="h-7 w-7" />
               </div>
               <h3 className="font-semibold text-gray-900">{type.label}</h3>
