@@ -36,7 +36,7 @@ const SOSSettings = () => {
       </div>
 
       {/* Status Card */}
-      <div className="bg-gradient-to-br from-red-50 to-orange-50 border-2 border-red-200 rounded-2xl p-6 mb-6">
+      <div className="bg-linear-to-br from-red-50 to-orange-50 border-2 border-red-200 rounded-2xl p-6 mb-6">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-xl font-semibold text-gray-900 mb-2">System Status</h2>
