@@ -4,13 +4,13 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from typing import Optional
 
-def send_password_email(to_email: str, password: str) -> bool:
+def send_password_reset_email(to_email: str, reset_token: str) -> bool:
     """
-    Send password recovery email via Gmail SMTP.
+    Send password reset email with reset link via Gmail SMTP.
     
     Args:
         to_email: Recipient email address
-        password: User's password to send
+        reset_token: Password reset token
         
     Returns:
         bool: True if email sent successfully, False otherwise
@@ -20,6 +20,8 @@ def send_password_email(to_email: str, password: str) -> bool:
     smtp_username = os.getenv("SMTP_USERNAME")
     smtp_password = os.getenv("SMTP_PASSWORD")
     smtp_from_email = os.getenv("SMTP_FROM_EMAIL", smtp_username)
+    
+    print(f"DEBUG: SMTP Config - Server: {smtp_server}, Port: {smtp_port}, Username: {smtp_username}, From: {smtp_from_email}")
     
     # Validate SMTP configuration
     if not smtp_username or not smtp_password:
@@ -33,15 +35,20 @@ def send_password_email(to_email: str, password: str) -> bool:
         msg["From"] = smtp_from_email
         msg["To"] = to_email
         
+        # Get client URL from environment
+        client_url = os.getenv("CLIENT_URL", "http://localhost:5173")
+        reset_link = f"{client_url}/reset-password?token={reset_token}"
+        
         # Create email body
         text_content = f"""
 Hello,
 
-You requested to recover your password for MindTrace.
+You requested to reset your password for MindTrace.
 
-Your password is: {password}
+Click the link below to reset your password:
+{reset_link}
 
-For security reasons, we recommend changing your password after logging in.
+This link will expire in 1 hour.
 
 If you didn't request this, please ignore this email.
 
@@ -58,26 +65,31 @@ MindTrace Team
         .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
         .header {{ background-color: #1f2937; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }}
         .content {{ background-color: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px; }}
-        .password-box {{ background-color: white; border: 2px solid #4f46e5; padding: 15px; margin: 20px 0; border-radius: 8px; text-align: center; }}
-        .password {{ font-size: 24px; font-weight: bold; color: #4f46e5; letter-spacing: 2px; }}
+        .button-box {{ text-align: center; margin: 30px 0; }}
+        .reset-button {{ display: inline-block; background-color: #4f46e5; color: white; padding: 15px 40px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px; }}
+        .reset-button:hover {{ background-color: #4338ca; }}
         .footer {{ margin-top: 20px; font-size: 12px; color: #6b7280; }}
+        .expiry {{ background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 12px; margin: 20px 0; border-radius: 4px; }}
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
             <h1>MindTrace</h1>
-            <p>Password Recovery</p>
+            <p>Password Reset Request</p>
         </div>
         <div class="content">
             <p>Hello,</p>
-            <p>You requested to recover your password for MindTrace.</p>
-            <div class="password-box">
-                <p style="margin: 0; font-size: 14px; color: #6b7280;">Your password is:</p>
-                <p class="password">{password}</p>
+            <p>You requested to reset your password for MindTrace.</p>
+            <div class="button-box">
+                <a href="{reset_link}" class="reset-button">Reset Password</a>
             </div>
-            <p><strong>Important:</strong> For security reasons, we recommend changing your password after logging in.</p>
-            <p>If you didn't request this, please ignore this email.</p>
+            <div class="expiry">
+                <strong>⏰ This link will expire in 1 hour</strong>
+            </div>
+            <p>If the button doesn't work, copy and paste this link into your browser:</p>
+            <p style="word-break: break-all; color: #4f46e5;">{reset_link}</p>
+            <p>If you didn't request this, please ignore this email. Your password will remain unchanged.</p>
             <div class="footer">
                 <p>Best regards,<br>MindTrace Team</p>
             </div>

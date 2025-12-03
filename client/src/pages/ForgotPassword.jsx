@@ -14,7 +14,7 @@ const ForgotPassword = () => {
         setIsLoading(true);
 
         try {
-            const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+            const API_URL = import.meta.env.VITE_API_URL || import.meta.env.VITE_BASE_URL || 'http://localhost:8000';
             const response = await fetch(`${API_URL}/auth/forgot-password`, {
                 method: 'POST',
                 headers: {
@@ -23,13 +23,16 @@ const ForgotPassword = () => {
                 body: JSON.stringify({ email }),
             });
 
+            const data = await response.json();
+
             if (!response.ok) {
-                throw new Error('Failed to send reset email');
+                throw new Error(data.detail || 'Failed to send reset email');
             }
 
             setEmailSent(true);
-            toast.success('Password sent to your email!');
+            toast.success('Password reset link sent to your email!');
         } catch (err) {
+            console.error('Forgot password error:', err);
             const errorMessage = err.message || 'Failed to send reset link. Please try again.';
             toast.error(errorMessage);
         } finally {
@@ -77,7 +80,7 @@ const ForgotPassword = () => {
                                 </div>
                                 <h1 className="text-3xl font-bold text-gray-900 mt-4">Check Your Email</h1>
                                 <p className="text-gray-600 mt-2">
-                                    We've sent a password reset link to <span className="font-semibold text-gray-900">{email}</span>
+                                    We've sent a password reset link to <span className="font-semibold text-gray-900">{email}</span>. Click the link in the email to reset your password.
                                 </p>
                             </>
                         )}
