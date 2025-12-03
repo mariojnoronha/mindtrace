@@ -1,149 +1,25 @@
-import { useLayoutEffect, useRef } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { Brain, Mic, Eye, Shield, Clock, Zap, Heart, Users, Lock, Smartphone } from 'lucide-react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useNavigate } from 'react-router';
 
-gsap.registerPlugin(ScrollTrigger);
-
 const Landing = () => {
-  const mainRef = useRef(null);
   const navigate = useNavigate();
 
-  useLayoutEffect(() => {
-    const ctx = gsap.context(() => {
-      
-      gsap.from('.hero-title', {
-        y: 50,
-        opacity: 0,
-        duration: 0.8,
-        delay: 0.2,
-        ease: 'power3.out'
-      });
-
-      gsap.from('.hero-description', {
-        y: 30,
-        opacity: 0,
-        duration: 0.6,
-        delay: 0.5,
-        ease: 'power2.out'
-      });
-
-      // Product section with subtle fade
-      gsap.from('.product-showcase', {
-        y: 60,
-        opacity: 0,
-        duration: 1.3,
-        ease: 'power3.out'
-      });
-
-      // Feature sections - individual animations
-      const featureSections = gsap.utils.toArray('.feature-section');
-      featureSections.forEach((section, i) => {
-        const content = section.querySelector('.feature-content');
-        const visual = section.querySelector('.feature-visual');
-        
-        if (content) {
-          gsap.from(content, {
-            scrollTrigger: {
-              trigger: section,
-              start: 'top 75%',
-            },
-            x: i % 2 === 0 ? -60 : 60,
-            opacity: 0,
-            duration: 1,
-            ease: 'power3.out'
-          });
-        }
-        
-        if (visual) {
-          gsap.from(visual, {
-            scrollTrigger: {
-              trigger: section,
-              start: 'top 75%',
-            },
-            x: i % 2 === 0 ? 60 : -60,
-            opacity: 0,
-            duration: 1,
-            ease: 'power3.out'
-          });
-        }
-      });
-
-      // Feature cards animation
-      const featureCards = gsap.utils.toArray('.feature-card');
-      if (featureCards.length > 0) {
-        gsap.fromTo(featureCards, 
-          { 
-            opacity: 0, 
-            y: 30 
-          },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.6,
-            stagger: 0.1,
-            ease: 'power3.out',
-            scrollTrigger: {
-              trigger: '.features-section',
-              start: 'top 85%',
-              toggleActions: 'play none none none'
-            }
-          }
-        );
-      }
-
-      // Spec items animation
-      const specItems = gsap.utils.toArray('.spec-item');
-      if (specItems.length > 0) {
-        gsap.from(specItems, {
-          scrollTrigger: {
-            trigger: '.specs-section',
-            start: 'top 75%',
-          },
-          y: 40,
-          opacity: 0,
-          duration: 0.5,
-          stagger: 0.08,
-          ease: 'power2.out'
-        });
-      }
-
-      // CTA section with scale
-      gsap.from('.cta-content', {
-        scrollTrigger: {
-          trigger: '.cta-section',
-          start: 'top 80%',
-        },
-        scale: 0.95,
-        opacity: 0,
-        duration: 1,
-        ease: 'power3.out'
-      });
-
-    }, mainRef);
-
-    return () => {
-      ctx.revert();
-    };
-  }, []);
-
   return (
-    <div ref={mainRef} className="min-h-screen bg-white overflow-x-hidden">
+    <div className="min-h-screen bg-white overflow-x-hidden">
       <Navbar />
 
       {/* Hero Section */}
       <section id="overview" className="pt-32 pb-20 px-6 lg:px-8">
         <div className="max-w-5xl mx-auto text-center">
-          <h1 className="hero-title text-4xl md:text-7xl lg:text-8xl font-bold text-gray-900 mb-8 tracking-tight leading-[1.1]">
+          <h1 className="text-4xl md:text-7xl lg:text-8xl font-bold text-gray-900 mb-8 tracking-tight leading-[1.1]">
             A new species of<br />smart glasses.
           </h1>
-          <p className="hero-description text-xl md:text-2xl text-gray-600 mb-12 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-xl md:text-2xl text-gray-600 mb-12 max-w-3xl mx-auto leading-relaxed">
             MindTrace integrates seamlessly with your Ray-Ban Meta to whisper names, reminders, and context directly into your ear.
           </p>
-          <button onClick={() => navigate('/login')} className="bg-gray-900 text-white px-10 py-4 rounded-full hover:bg-gray-800 transition-all duration-300 font-medium text-lg shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 animate-slideInUp">
+          <button onClick={() => navigate('/login')} className="bg-gray-900 text-white px-10 py-4 rounded-full hover:bg-gray-800 transition-all duration-300 font-medium text-lg shadow-lg hover:shadow-xl">
             Join the Waitlist
           </button>
         </div>
@@ -152,12 +28,12 @@ const Landing = () => {
       {/* Product Image Section */}
       <section className="py-20 px-6 lg:px-8 bg-gray-50">
         <div className="max-w-6xl mx-auto">
-          <div className="product-showcase relative aspect-square md:aspect-video rounded-3xl overflow-hidden shadow-2xl group cursor-default">
+          <div className="relative aspect-square md:aspect-video rounded-3xl overflow-hidden shadow-2xl group cursor-default">
             {/* Background Image with Zoom Effect */}
             <img 
               src="https://images.unsplash.com/photo-1592478411213-6153e4ebc07d?q=80&w=2912&auto=format&fit=crop" 
               alt="Smart glasses technology"
-              className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+              className="absolute inset-0 w-full h-full object-cover"
             />
             
             {/* Cinematic Gradient Overlay */}
@@ -165,7 +41,7 @@ const Landing = () => {
             
             {/* Glass Content Card */}
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="relative bg-white/5 backdrop-blur-xl px-16 py-12 rounded-3xl border border-white/10 shadow-[0_0_60px_rgba(0,0,0,0.3)] overflow-hidden group-hover:bg-white/10 transition-all duration-500 hover:scale-105 hover:border-white/20">
+              <div className="relative bg-white/5 backdrop-blur-xl px-16 py-12 rounded-3xl border border-white/10 shadow-[0_0_60px_rgba(0,0,0,0.3)] overflow-hidden group-hover:bg-white/10 transition-all duration-500 hover:border-white/20">
                 {/* Shine Effect */}
                 <div className="absolute inset-0 bg-linear-to-tr from-white/0 via-white/5 to-white/0 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000 ease-in-out" />
                 
@@ -186,9 +62,9 @@ const Landing = () => {
       </section>
 
       {/* Feature Highlight 1 */}
-      <section className="feature-section py-32 px-6 lg:px-8">
+      <section className="py-32 px-6 lg:px-8">
         <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-16 items-center">
-          <div className="feature-visual order-2 md:order-1">
+          <div className="order-2 md:order-1">
             <div className="aspect-square bg-linear-to-br from-blue-100 to-indigo-100 rounded-3xl flex items-center justify-center">
               <Eye className="h-40 w-40 text-indigo-600" />
             </div>
@@ -225,9 +101,9 @@ const Landing = () => {
       </section>
 
       {/* Feature Highlight 2 */}
-      <section className="feature-section py-32 px-6 lg:px-8 bg-gray-50">
+      <section className="py-32 px-6 lg:px-8 bg-gray-50">
         <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-16 items-center">
-          <div className="feature-content">
+          <div>
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight">
               Whisper Assist.
             </h2>
@@ -255,7 +131,7 @@ const Landing = () => {
               </div>
             </div>
           </div>
-          <div className="feature-visual">
+          <div>
             <div className="aspect-square bg-linear-to-br from-purple-100 to-pink-100 rounded-3xl flex items-center justify-center">
               <Mic className="h-40 w-40 text-purple-600" />
             </div>
@@ -264,9 +140,9 @@ const Landing = () => {
       </section>
 
       {/* Feature Highlight 3 */}
-      <section className="feature-section py-32 px-6 lg:px-8">
+      <section className="py-32 px-6 lg:px-8">
         <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-16 items-center">
-          <div className="feature-visual order-2 md:order-1">
+          <div className="order-2 md:order-1">
             <div className="aspect-square bg-linear-to-br from-emerald-100 to-teal-100 rounded-3xl flex items-center justify-center">
               <Shield className="h-40 w-40 text-emerald-600" />
             </div>
@@ -303,7 +179,7 @@ const Landing = () => {
       </section>
 
       {/* Features Grid */}
-      <section id="features" className="features-section py-32 px-6 lg:px-8 bg-gray-50">
+      <section id="features" className="py-32 px-6 lg:px-8 bg-gray-50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-20">
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
@@ -315,48 +191,48 @@ const Landing = () => {
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="feature-card bg-white p-8 rounded-2xl border border-gray-200 hover:border-gray-300 transition-all hover:shadow-lg group">
-              <div className="bg-indigo-100 text-indigo-600 w-14 h-14 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+            <div className="bg-white p-8 rounded-2xl border border-gray-200 hover:border-gray-300 transition-all hover:shadow-lg group">
+              <div className="bg-indigo-100 text-indigo-600 w-14 h-14 rounded-xl flex items-center justify-center mb-6">
                 <Eye className="h-8 w-8" />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-3">Visual Recognition</h3>
               <p className="text-gray-600 leading-relaxed">Identifies people and objects instantly</p>
             </div>
 
-            <div className="feature-card bg-white p-8 rounded-2xl border border-gray-200 hover:border-gray-300 transition-all hover:shadow-lg group">
-              <div className="bg-purple-100 text-purple-600 w-14 h-14 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+            <div className="bg-white p-8 rounded-2xl border border-gray-200 hover:border-gray-300 transition-all hover:shadow-lg group">
+              <div className="bg-purple-100 text-purple-600 w-14 h-14 rounded-xl flex items-center justify-center mb-6">
                 <Mic className="h-8 w-8" />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-3">Voice Assistant</h3>
               <p className="text-gray-600 leading-relaxed">Get answers without looking at a screen</p>
             </div>
 
-            <div className="feature-card bg-white p-8 rounded-2xl border border-gray-200 hover:border-gray-300 transition-all hover:shadow-lg group">
-              <div className="bg-emerald-100 text-emerald-600 w-14 h-14 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+            <div className="bg-white p-8 rounded-2xl border border-gray-200 hover:border-gray-300 transition-all hover:shadow-lg group">
+              <div className="bg-emerald-100 text-emerald-600 w-14 h-14 rounded-xl flex items-center justify-center mb-6">
                 <Shield className="h-8 w-8" />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-3">Safety Features</h3>
               <p className="text-gray-600 leading-relaxed">Automatic location sharing for peace of mind</p>
             </div>
 
-            <div className="feature-card bg-white p-8 rounded-2xl border border-gray-200 hover:border-gray-300 transition-all hover:shadow-lg group">
-              <div className="bg-blue-100 text-blue-600 w-14 h-14 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+            <div className="bg-white p-8 rounded-2xl border border-gray-200 hover:border-gray-300 transition-all hover:shadow-lg group">
+              <div className="bg-blue-100 text-blue-600 w-14 h-14 rounded-xl flex items-center justify-center mb-6">
                 <Clock className="h-8 w-8" />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-3">Smart Reminders</h3>
               <p className="text-gray-600 leading-relaxed">Never miss an important moment</p>
             </div>
 
-            <div className="feature-card bg-white p-8 rounded-2xl border border-gray-200 hover:border-gray-300 transition-all hover:shadow-lg group">
-              <div className="bg-pink-100 text-pink-600 w-14 h-14 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+            <div className="bg-white p-8 rounded-2xl border border-gray-200 hover:border-gray-300 transition-all hover:shadow-lg group">
+              <div className="bg-pink-100 text-pink-600 w-14 h-14 rounded-xl flex items-center justify-center mb-6">
                 <Smartphone className="h-8 w-8" />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-3">App Integration</h3>
               <p className="text-gray-600 leading-relaxed">Seamlessly connects with your digital life</p>
             </div>
 
-            <div className="feature-card bg-white p-8 rounded-2xl border border-gray-200 hover:border-gray-300 transition-all hover:shadow-lg group">
-              <div className="bg-gray-100 text-gray-600 w-14 h-14 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+            <div className="bg-white p-8 rounded-2xl border border-gray-200 hover:border-gray-300 transition-all hover:shadow-lg group">
+              <div className="bg-gray-100 text-gray-600 w-14 h-14 rounded-xl flex items-center justify-center mb-6">
                 <Lock className="h-8 w-8" />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-3">Privacy First</h3>
@@ -367,7 +243,7 @@ const Landing = () => {
       </section>
 
       {/* Technical Specifications */}
-      <section id="support" className="specs-section py-32 px-6 lg:px-8">
+      <section id="support" className="py-32 px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
@@ -387,7 +263,7 @@ const Landing = () => {
               { label: "Platform", value: "iOS 15+ and Android 11+" },
               { label: "Privacy", value: "End-to-end encryption" }
             ].map((spec, index) => (
-              <div key={index} className="spec-item flex justify-between items-center py-4 border-b border-gray-200">
+              <div key={index} className="flex justify-between items-center py-4 border-b border-gray-200">
                 <span className="text-gray-600 font-medium">{spec.label}</span>
                 <span className="text-gray-900 font-semibold text-right">{spec.value}</span>
               </div>
@@ -397,15 +273,15 @@ const Landing = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="cta-section py-32 px-6 lg:px-8">
-        <div className="cta-content max-w-4xl mx-auto text-center text-black">
+      <section className="py-32 px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto text-center text-black">
           <h2 className="text-5xl md:text-6xl font-bold mb-8 leading-tight">
             Ready to upgrade<br />your memory?
           </h2>
           <p className="text-xl md:text-2xl mb-12 opacity-90 max-w-2xl mx-auto leading-relaxed">
             Join the waitlist today and be the first to experience MindTrace.
           </p>
-          <button className="bg-gray-900 text-white px-12 py-5 rounded-full hover:bg-gray-800 transition-all duration-300 font-semibold text-lg shadow-2xl hover:shadow-3xl hover:scale-105 active:scale-95">
+          <button className="bg-gray-900 text-white px-12 py-5 rounded-full hover:bg-gray-800 transition-all duration-300 font-semibold text-lg shadow-2xl hover:shadow-3xl">
             Join the Waitlist
           </button>
         </div>

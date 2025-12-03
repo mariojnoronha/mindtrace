@@ -1,34 +1,8 @@
-import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router';
-import { Clock, Users, Bell, Calendar, TrendingUp, Activity, Plus, ArrowRight } from 'lucide-react';
-import gsap from 'gsap';
+import { Clock, Users, Bell, Calendar, TrendingUp, Activity, Plus, ArrowRight, AlertCircle, Phone } from 'lucide-react';
 
 const DashboardHome = () => {
-  const mainRef = useRef(null);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.from('.stat-card', {
-        y: 30,
-        opacity: 0,
-        duration: 0.6,
-        stagger: 0.1,
-        ease: 'power3.out'
-      });
-
-      gsap.from('.widget-card', {
-        y: 40,
-        opacity: 0,
-        duration: 0.6,
-        stagger: 0.15,
-        delay: 0.3,
-        ease: 'power3.out'
-      });
-    }, mainRef);
-
-    return () => ctx.revert();
-  }, []);
 
   const recentInteractions = [
     {
@@ -79,9 +53,9 @@ const DashboardHome = () => {
   };
 
   return (
-    <div ref={mainRef} className="p-6 lg:p-8 max-w-[1600px] mx-auto">
+    <div className="p-6 lg:p-8 max-w-[1600px] mx-auto">
       {/* Header */}
-      <div className="mb-8">
+      <div className="mb-6">
         <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
           Welcome back, John
         </h1>
@@ -90,11 +64,65 @@ const DashboardHome = () => {
         </p>
       </div>
 
+      {/* Quick Actions */}
+      <div className="bg-white rounded-2xl border border-gray-200 p-6 mb-8">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <button
+            onClick={() => navigate('/dashboard/contacts')}
+            className="flex flex-col items-center gap-3 p-4 rounded-xl border border-gray-200 
+              hover:border-gray-300 hover:bg-gray-50 transition-all group"
+          >
+            <div className="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center 
+              group-hover:bg-gray-200 transition-colors">
+              <Users className="h-6 w-6 text-gray-700" />
+            </div>
+            <span className="text-sm font-medium text-gray-900">Add Contact</span>
+          </button>
+          
+          <button
+            onClick={() => navigate('/dashboard/reminders')}
+            className="flex flex-col items-center gap-3 p-4 rounded-xl border border-gray-200 
+              hover:border-gray-300 hover:bg-gray-50 transition-all group"
+          >
+            <div className="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center 
+              group-hover:bg-gray-200 transition-colors">
+              <Calendar className="h-6 w-6 text-gray-700" />
+            </div>
+            <span className="text-sm font-medium text-gray-900">New Reminder</span>
+          </button>
+          
+          <button
+            onClick={() => navigate('/dashboard/alerts')}
+            className="flex flex-col items-center gap-3 p-4 rounded-xl border border-gray-200 
+              hover:border-gray-300 hover:bg-gray-50 transition-all group"
+          >
+            <div className="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center 
+              group-hover:bg-gray-200 transition-colors">
+              <Bell className="h-6 w-6 text-gray-700" />
+            </div>
+            <span className="text-sm font-medium text-gray-900">View Alerts</span>
+          </button>
+          
+          <button
+            onClick={() => navigate('/dashboard/sos')}
+            className="flex flex-col items-center gap-3 p-4 rounded-xl border-2 border-red-200 
+              bg-red-50 hover:bg-red-100 hover:border-red-300 transition-all group"
+          >
+            <div className="w-12 h-12 rounded-xl bg-red-100 flex items-center justify-center 
+              group-hover:bg-red-200 transition-colors">
+              <AlertCircle className="h-6 w-6 text-red-600" />
+            </div>
+            <span className="text-sm font-semibold text-red-600">Emergency SOS</span>
+          </button>
+        </div>
+      </div>
+
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div className="stat-card bg-white rounded-2xl border border-gray-200 p-6 hover:shadow-lg transition-all duration-300 cursor-default group">
+        <div className="bg-white rounded-2xl border border-gray-200 p-6 hover:shadow-lg transition-all duration-300 cursor-default group">
           <div className="flex items-start justify-between mb-4">
-            <div className="bg-indigo-100 text-indigo-600 w-12 h-12 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+            <div className="bg-indigo-100 text-indigo-600 w-12 h-12 rounded-xl flex items-center justify-center">
               <Users className="h-6 w-6" />
             </div>
             <span className="flex items-center gap-1 text-sm font-semibold text-emerald-600">
@@ -108,9 +136,9 @@ const DashboardHome = () => {
           </div>
         </div>
 
-        <div className="stat-card bg-white rounded-2xl border border-gray-200 p-6 hover:shadow-lg transition-all duration-300 cursor-default group">
+        <div className="bg-white rounded-2xl border border-gray-200 p-6 hover:shadow-lg transition-all duration-300 cursor-default group">
           <div className="flex items-start justify-between mb-4">
-            <div className="bg-purple-100 text-purple-600 w-12 h-12 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+            <div className="bg-purple-100 text-purple-600 w-12 h-12 rounded-xl flex items-center justify-center">
               <Activity className="h-6 w-6" />
             </div>
             <span className="flex items-center gap-1 text-sm font-semibold text-emerald-600">
@@ -124,9 +152,9 @@ const DashboardHome = () => {
           </div>
         </div>
 
-        <div className="stat-card bg-white rounded-2xl border border-gray-200 p-6 hover:shadow-lg transition-all duration-300 cursor-default group">
+        <div className="bg-white rounded-2xl border border-gray-200 p-6 hover:shadow-lg transition-all duration-300 cursor-default group">
           <div className="flex items-start justify-between mb-4">
-            <div className="bg-yellow-100 text-yellow-600 w-12 h-12 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+            <div className="bg-yellow-100 text-yellow-600 w-12 h-12 rounded-xl flex items-center justify-center">
               <Bell className="h-6 w-6" />
             </div>
           </div>
@@ -136,9 +164,9 @@ const DashboardHome = () => {
           </div>
         </div>
 
-        <div className="stat-card bg-white rounded-2xl border border-gray-200 p-6 hover:shadow-lg transition-all duration-300 cursor-default group">
+        <div className="bg-white rounded-2xl border border-gray-200 p-6 hover:shadow-lg transition-all duration-300 cursor-default group">
           <div className="flex items-start justify-between mb-4">
-            <div className="bg-emerald-100 text-emerald-600 w-12 h-12 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+            <div className="bg-emerald-100 text-emerald-600 w-12 h-12 rounded-xl flex items-center justify-center">
               <Calendar className="h-6 w-6" />
             </div>
           </div>
@@ -152,7 +180,7 @@ const DashboardHome = () => {
       {/* Main Content Grid */}
       <div className="grid lg:grid-cols-3 gap-6 mb-8">
         {/* Recent Interactions */}
-        <div className="lg:col-span-2 widget-card bg-white rounded-2xl border border-gray-200 overflow-hidden">
+        <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-200 overflow-hidden">
           <div className="p-6 border-b border-gray-200 flex items-center justify-between">
             <h2 className="text-xl font-semibold text-gray-900">Recent Interactions</h2>
             <button
@@ -198,7 +226,7 @@ const DashboardHome = () => {
         </div>
 
         {/* Today's Reminders */}
-        <div className="widget-card bg-white rounded-2xl border border-gray-200 overflow-hidden">
+        <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
           <div className="p-6 border-b border-gray-200 flex items-center justify-between">
             <h2 className="text-xl font-semibold text-gray-900">Today's Reminders</h2>
             <button
@@ -224,55 +252,24 @@ const DashboardHome = () => {
         </div>
       </div>
 
-      {/* Bottom Row */}
-      <div className="grid lg:grid-cols-3 gap-6">
-        {/* Glasses Status */}
-        <div className="widget-card bg-white rounded-2xl border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Glasses Status</h2>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">Connection</span>
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-                <span className="text-sm font-semibold text-gray-900">Connected</span>
-              </div>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">Battery</span>
-              <span className="text-sm font-semibold text-gray-900">87%</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">Last Sync</span>
-              <span className="text-sm font-semibold text-gray-900">2 min ago</span>
+      {/* Glasses Status */}
+      <div className="bg-white rounded-2xl border border-gray-200 p-6 hover:shadow-lg transition-shadow">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">Glasses Status</h2>
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-gray-600">Connection</span>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+              <span className="text-sm font-semibold text-gray-900">Connected</span>
             </div>
           </div>
-        </div>
-
-        {/* Quick Actions */}
-        <div className="lg:col-span-2 widget-card bg-gray-900 rounded-2xl p-6 text-white">
-          <h2 className="text-lg font-semibold mb-4">Quick Actions</h2>
-          <div className="grid md:grid-cols-3 gap-4">
-            <button
-              onClick={() => navigate('/dashboard/contacts')}
-              className="bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-xl p-4 transition-all duration-300 hover:scale-105 active:scale-95 border border-white/10 group"
-            >
-              <Users className="h-6 w-6 mb-3 group-hover:scale-110 transition-transform" />
-              <p className="text-sm font-medium">Add Contact</p>
-            </button>
-            <button
-              onClick={() => navigate('/dashboard/reminders')}
-              className="bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-xl p-4 transition-all duration-300 hover:scale-105 active:scale-95 border border-white/10 group"
-            >
-              <Calendar className="h-6 w-6 mb-3 group-hover:scale-110 transition-transform" />
-              <p className="text-sm font-medium">Create Reminder</p>
-            </button>
-            <button
-              onClick={() => navigate('/dashboard/alerts')}
-              className="bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-xl p-4 transition-all duration-300 hover:scale-105 active:scale-95 border border-white/10 group"
-            >
-              <Bell className="h-6 w-6 mb-3 group-hover:scale-110 transition-transform" />
-              <p className="text-sm font-medium">View Alerts</p>
-            </button>
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-gray-600">Battery</span>
+            <span className="text-sm font-semibold text-gray-900">87%</span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-gray-600">Last Sync</span>
+            <span className="text-sm font-semibold text-gray-900">2 min ago</span>
           </div>
         </div>
       </div>
