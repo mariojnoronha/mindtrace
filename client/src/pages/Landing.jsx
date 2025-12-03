@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import FAQSection from '../components/sections/FAQSection';
@@ -6,6 +7,15 @@ import { useNavigate } from 'react-router';
 
 const Landing = () => {
   const navigate = useNavigate();
+
+  // Scroll to top on component mount and clear any hash fragments
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    // Remove hash from URL without triggering navigation
+    if (window.location.hash) {
+      window.history.replaceState(null, '', window.location.pathname);
+    }
+  }, []);
 
   return (
     <div className="min-h-screen bg-white overflow-x-hidden">
