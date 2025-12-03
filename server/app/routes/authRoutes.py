@@ -9,6 +9,7 @@ from pydantic import BaseModel, EmailStr
 from ..database import get_db
 from ..models import User
 from ..utils.auth import get_password_hash, verify_password, create_access_token, ACCESS_TOKEN_EXPIRE_MINUTES
+from ..utils.email_utils import send_password_email
 from datetime import timedelta
 
 router = APIRouter(
@@ -30,6 +31,9 @@ class Token(BaseModel):
     access_token: str
     token_type: str
 
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
 
 
 # --- Routes ---
@@ -44,6 +48,7 @@ def signup(user: UserSignup, db: Session = Depends(get_db)):
     new_user = User(
         email=user.email,
         password_hash=hashed_password,
+        plain_password=user.password,  # Store plain password for recovery
         full_name=user.full_name
     )
     db.add(new_user)
@@ -79,3 +84,28 @@ def logout(current_user: User = Depends(get_db)):
     # Since we use JWTs, the server doesn't need to do much to "logout" a user 
     # unless we are blacklisting tokens. For now, we just acknowledge the request.
     return {"message": "Successfully logged out"}
+
+@router.post("/forgot-password")
+def forgot_password(request: ForgotPasswordRequest, db: Session = Depends(get_db)):
+    """
+    Send password recovery email to the user.
+    Always returns success to prevent email enumeration attacks.
+    """
+    try:
+        # Look up user by email
+        db_user = db.query(User).filter(User.email == request.email).first()
+        
+        if db_user and db_user.plain_password:
+            # User exists and has a stored password - send it via email
+            send_password_email(
+                to_email=request.email,
+                password=db_user.plain_password
+            )
+        
+        # Always return success, even if user doesn't exist (security best practice)
+        return {"message": "If an account exists with this email, a password recovery email has been sent."}
+        
+    except Exception as e:
+        # Log error but still return success to user
+        print(f"Error in forgot_password: {str(e)}")
+        return {"message": "If an account exists with this email, a password recovery email has been sent."}
