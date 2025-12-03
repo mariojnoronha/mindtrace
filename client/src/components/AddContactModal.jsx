@@ -285,14 +285,20 @@ const AddContactModal = ({ isOpen, onClose, onSave, navigateAfterSave = false })
                 <label className="block text-sm font-semibold text-gray-900 mb-2">
                   Visit Frequency
                 </label>
-                <input
-                  type="text"
+                <select
                   value={formData.visit_frequency}
                   onChange={(e) => setFormData({ ...formData, visit_frequency: e.target.value })}
                   className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl
                     focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
-                  placeholder="e.g., Daily, Weekly, Monthly"
-                />
+                >
+                  <option value="">Select frequency</option>
+                  <option value="Daily">Daily</option>
+                  <option value="Weekly">Weekly</option>
+                  <option value="Bi-weekly">Bi-weekly</option>
+                  <option value="Monthly">Monthly</option>
+                  <option value="Occasionally">Occasionally</option>
+                  <option value="Rarely">Rarely</option>
+                </select>
               </div>
 
               <div>
