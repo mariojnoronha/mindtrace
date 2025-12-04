@@ -60,6 +60,7 @@ class SOSAlertCreate(BaseModel):
     location: Optional[LocationData] = None
     battery_level: Optional[int] = None
     connection_status: Optional[str] = None
+    is_test: Optional[bool] = False
 
 class SOSAlertUpdate(BaseModel):
     status: Optional[str] = None
@@ -79,6 +80,7 @@ class SOSAlertResponse(BaseModel):
     battery_level: Optional[int] = None
     connection_status: Optional[str] = None
     wearer_name: Optional[str] = None
+    is_test: Optional[bool] = False
 
     class Config:
         from_attributes = True
@@ -165,7 +167,8 @@ def create_sos_alert(
     db_alert = SOSAlert(
         user_id=current_user.id,
         battery_level=alert_data.battery_level,
-        connection_status=alert_data.connection_status
+        connection_status=alert_data.connection_status,
+        is_test=alert_data.is_test or False
     )
     
     if alert_data.location:
@@ -190,6 +193,7 @@ def create_sos_alert(
         battery_level=db_alert.battery_level,
         connection_status=db_alert.connection_status,
         wearer_name=current_user.full_name,
+        is_test=db_alert.is_test,
         location=LocationData(
             lat=float(db_alert.latitude),
             lng=float(db_alert.longitude),
@@ -229,6 +233,7 @@ def get_sos_alerts(
             battery_level=alert.battery_level,
             connection_status=alert.connection_status,
             wearer_name=current_user.full_name,
+            is_test=alert.is_test,
             location=LocationData(
                 lat=float(alert.latitude),
                 lng=float(alert.longitude),

@@ -4,14 +4,13 @@
  */
 
 import { useEffect, useState } from 'react';
-import { Shield, Bell } from 'lucide-react';
+import { Shield } from 'lucide-react';
 
 // Components
 import SOSMap from './SOSMap';
 import SOSQuickInfo from './SOSQuickInfo';
 import SOSAlertPanel from './SOSAlertPanel';
 import SOSAlertHistory from './SOSAlertHistory';
-import SOSTestControls from './SOSTestControls';
 import SOSNotificationBanner from './SOSNotificationBanner';
 
 // Hooks
@@ -22,14 +21,9 @@ import useNotifications from '../../hooks/useNotifications';
 // Services
 import { userApi, sosApi } from '../../services/api';
 
-// Config
-import {
-    DEFAULT_EMERGENCY_CONTACTS
-} from '../../constants/sosConfig';
-
 const SOSPage = () => {
     const [wearerProfile, setWearerProfile] = useState(null);
-    const [emergencyContacts, setEmergencyContacts] = useState(DEFAULT_EMERGENCY_CONTACTS);
+    const [emergencyContacts, setEmergencyContacts] = useState([]);
     const [profileLoading, setProfileLoading] = useState(true);
 
     // SOS Alert state
@@ -74,9 +68,8 @@ const SOSPage = () => {
                     lastSeen: new Date().toISOString()
                 });
 
-                if (contactsRes.data && contactsRes.data.length > 0) {
-                    setEmergencyContacts(contactsRes.data);
-                }
+                // Set emergency contacts from database (empty array if none)
+                setEmergencyContacts(contactsRes.data || []);
             } catch (error) {
                 console.error('Failed to fetch profile data:', error);
                 // Use default profile if fetch fails
@@ -104,37 +97,8 @@ const SOSPage = () => {
         bannerMessage,
         togglePreference,
         hideNotificationBanner,
-        triggerSOSNotification,
-        playTestSound
+        triggerSOSNotification
     } = useNotifications();
-
-    // Handle SOS simulation
-    const handleSimulateSOS = async () => {
-        try {
-            const alert = await triggerAlert({
-                isTest: true,
-                location: currentLocation,
-                batteryLevel: batteryLevel,
-                connectionStatus: connectionStatus
-            });
-            if (alert) {
-                triggerSOSNotification(
-                    `SOS Alert received at ${alert.location?.address || 'Unknown location'}`,
-                    alert.location
-                );
-            }
-        } catch (error) {
-            console.error('Failed to simulate SOS:', error);
-        }
-    };
-
-    // Handle random location
-    const handleRandomLocation = () => {
-        const newLocation = setRandomLocation();
-        if (activeAlert) {
-            updateAlertLocation(newLocation);
-        }
-    };
 
     // Auto-update alert location when current location changes (real-time tracking)
     useEffect(() => {
@@ -245,19 +209,7 @@ const SOSPage = () => {
                     onResolve={handleResolve}
                     onAcknowledge={acknowledgeAlert}
                     isTestMode={isTestMode}
-                />
-            </div>
-
-            {/* Test Controls */}
-            <div className="mb-6">
-                <SOSTestControls
-                    onSimulateSOS={handleSimulateSOS}
-                    onRandomLocation={handleRandomLocation}
-                    onClearHistory={clearHistory}
-                    onTestSound={playTestSound}
-                    isAlertActive={!!activeAlert}
-                    soundEnabled={preferences.sound}
-                    onToggleSound={() => togglePreference('sound')}
+                    contacts={emergencyContacts}
                 />
             </div>
 

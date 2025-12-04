@@ -32,7 +32,8 @@ const SOSAlertPanel = ({
     activeAlert,
     onResolve,
     onAcknowledge,
-    isTestMode = false
+    isTestMode = false,
+    contacts = []
 }) => {
     // No active alert - show safe state
     if (!activeAlert) {
@@ -129,6 +130,7 @@ const SOSAlertPanel = ({
                 onResolve={onResolve}
                 onAcknowledge={onAcknowledge}
                 isTest={isTestMode}
+                contacts={contacts}
             />
         </div>
     );

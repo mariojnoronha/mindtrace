@@ -3,7 +3,7 @@
  * Displays wearer profile, emergency contacts, and status
  */
 
-import { User, Phone, MessageSquare, AlertCircle, Heart } from 'lucide-react';
+import { Phone, MessageSquare, AlertCircle } from 'lucide-react';
 import SOSStatusIndicator from './SOSStatusIndicator';
 
 /**
