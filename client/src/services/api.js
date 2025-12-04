@@ -53,6 +53,7 @@ export const alertsApi = {
   create: (data) => api.post('/alerts/', data),
   markRead: (id) => api.put(`/alerts/${id}/read`),
   markAllRead: () => api.put('/alerts/read-all'),
+  getUnreadCount: () => api.get('/alerts/unread-count'),
 };
 
 export const remindersApi = {
