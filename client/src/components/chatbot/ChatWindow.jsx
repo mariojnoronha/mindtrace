@@ -3,7 +3,7 @@
  */
 
 import { useEffect, useRef } from 'react';
-import { X, Trash2, Download, AlertCircle, Minus } from 'lucide-react';
+import { X, Trash2, AlertCircle } from 'lucide-react';
 import ChatMessage from './ChatMessage';
 import ChatInput from './ChatInput';
 import QuickActions from './QuickActions';
@@ -81,61 +81,41 @@ const ChatWindow = ({
     return (
         <div
             ref={windowRef}
-            className="chat-window"
+            className="absolute bottom-0 right-0 w-[420px] max-w-[calc(100vw-32px)] h-[650px] max-h-[calc(100vh-100px)] bg-white rounded-[24px] shadow-[0_20px_25px_-5px_rgba(0,0,0,0.1),0_10px_10px_-5px_rgba(0,0,0,0.04)] flex flex-col overflow-hidden animate-[slideUp_0.3s_cubic-bezier(0.4,0,0.2,1)] border border-gray-200 md:max-[480px]:w-[calc(100vw-32px)] md:max-[480px]:h-[calc(100vh-80px)] md:max-[480px]:rounded-xl"
             role="dialog"
             aria-modal="true"
             aria-label="Chat with AI Assistant"
         >
             {/* Header */}
-            <div className="chat-window-header">
-                <div className="chat-window-title">
-                    <div className="chat-window-avatar">
-                        <span className="chat-window-avatar-icon">🤖</span>
+            <div className="flex items-center justify-between px-6 py-5 bg-linear-to-br from-gray-900 to-gray-800 text-white border-b border-white/10">
+                <div className="flex items-center gap-3">
+                    <div className="w-11 h-11 bg-white/15 rounded-xl flex items-center justify-center p-2">
+                        <img src="/logo.png" alt="MindTrace" className="w-6 h-6 object-contain" />
                     </div>
                     <div>
-                        <h2 className="chat-window-name">AI Assistant</h2>
-                        <span className="chat-window-status">
+                        <h2 className="text-[17px] font-bold m-0 tracking-tight">AI Assistant</h2>
+                        <span className="text-xs opacity-90">
                             {isTyping ? 'Typing...' : 'Online'}
                         </span>
                     </div>
                 </div>
 
-                <div className="chat-window-actions">
+                <div className="flex gap-1">
                     {messages.length > 0 && (
-                        <>
-                            <button
-                                type="button"
-                                onClick={() => onExport('text')}
-                                className="chat-window-action-btn"
-                                aria-label="Export chat"
-                                title="Export conversation"
-                            >
-                                <Download className="w-4 h-4" />
-                            </button>
-                            <button
-                                type="button"
-                                onClick={onClearChat}
-                                className="chat-window-action-btn chat-window-action-danger"
-                                aria-label="Clear chat"
-                                title="Clear conversation"
-                            >
-                                <Trash2 className="w-4 h-4" />
-                            </button>
-                        </>
+                        <button
+                            type="button"
+                            onClick={onClearChat}
+                            className="w-9 h-9 rounded-[10px] border-none bg-white/15 text-white cursor-pointer flex items-center justify-center transition-all duration-200 hover:bg-red-500/30 hover:scale-105 focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2"
+                            aria-label="Clear chat"
+                            title="Clear conversation"
+                        >
+                            <Trash2 className="w-4 h-4" />
+                        </button>
                     )}
                     <button
                         type="button"
-                        onClick={onMinimize}
-                        className="chat-window-action-btn"
-                        aria-label="Minimize chat"
-                        title="Minimize"
-                    >
-                        <Minus className="w-4 h-4" />
-                    </button>
-                    <button
-                        type="button"
                         onClick={onClose}
-                        className="chat-window-action-btn"
+                        className="w-9 h-9 rounded-[10px] border-none bg-white/15 text-white cursor-pointer flex items-center justify-center transition-all duration-200 hover:bg-white/25 hover:scale-105 focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2"
                         aria-label="Close chat"
                         title="Close"
                     >
@@ -146,13 +126,13 @@ const ChatWindow = ({
 
             {/* Error banner */}
             {error && (
-                <div className="chat-window-error" role="alert">
+                <div className="flex items-center gap-2 px-4 py-3 bg-red-50 text-red-500 text-[13px]" role="alert">
                     <AlertCircle className="w-4 h-4" />
                     <span>{error}</span>
                     <button
                         type="button"
                         onClick={onDismissError}
-                        className="chat-window-error-dismiss"
+                        className="ml-auto bg-transparent border-none text-red-500 cursor-pointer p-1 rounded hover:bg-red-500/10"
                         aria-label="Dismiss error"
                     >
                         <X className="w-4 h-4" />
@@ -161,12 +141,12 @@ const ChatWindow = ({
             )}
 
             {/* Messages */}
-            <div className="chat-window-messages">
+            <div className="flex-1 overflow-y-auto px-5 py-5 flex flex-col gap-4 bg-gray-50 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-thumb]:rounded">
                 {messages.length === 0 ? (
-                    <div className="chat-window-empty">
-                        <div className="chat-window-empty-icon">💬</div>
-                        <h3>Start a conversation</h3>
-                        <p>Ask me anything about your contacts, reminders, or get help with the dashboard.</p>
+                    <div className="flex-1 flex flex-col items-center justify-center text-center px-5 py-10 text-gray-500">
+                        <div className="text-5xl mb-4">💬</div>
+                        <h3 className="text-lg font-semibold text-gray-900 m-0 mb-2">Start a conversation</h3>
+                        <p className="text-sm m-0 mb-6 max-w-[280px]">Ask me anything about your contacts, reminders, or get help with the dashboard.</p>
 
                         {/* Quick actions for empty state */}
                         <QuickActions
@@ -181,12 +161,12 @@ const ChatWindow = ({
                             <ChatMessage key={message.id} message={message} />
                         ))}
                         {isTyping && !messages.some((m) => m.isStreaming) && (
-                            <div className="chat-message chat-message-assistant">
-                                <div className="chat-message-avatar chat-avatar-assistant">
-                                    <span>🤖</span>
+                            <div className="flex gap-2.5 max-w-[85%] self-start animate-[fadeIn_0.3s_ease]">
+                                <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 bg-gray-200 text-gray-900">
+                                    <img src="/logo.png" alt="MindTrace" className="w-6 h-6 object-contain" />
                                 </div>
-                                <div className="chat-message-content">
-                                    <div className="chat-message-bubble">
+                                <div className="flex flex-col gap-1">
+                                    <div className="px-4 py-3 rounded-[18px] text-sm leading-relaxed bg-gray-200 text-gray-900 rounded-bl-md border border-gray-200">
                                         <TypingIndicator />
                                     </div>
                                 </div>
@@ -199,7 +179,7 @@ const ChatWindow = ({
 
             {/* Quick actions when there are messages */}
             {messages.length > 0 && !isLoading && (
-                <div className="chat-window-quick-actions-bar">
+                <div className="px-4 py-3 border-t border-gray-200 bg-white">
                     <QuickActions
                         actions={quickActions.slice(0, 3)}
                         onAction={onSendMessage}
@@ -209,7 +189,7 @@ const ChatWindow = ({
             )}
 
             {/* Input */}
-            <div className="chat-window-input">
+            <div className="px-4 py-4 bg-white border-t border-gray-200">
                 <ChatInput
                     onSend={onSendMessage}
                     disabled={isLoading}
