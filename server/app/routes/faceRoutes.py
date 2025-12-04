@@ -61,9 +61,12 @@ async def recognize_face_endpoint(
         img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
         
         if img is None:
+             print("DEBUG: Failed to decode image in recognize_face_endpoint")
              raise HTTPException(status_code=400, detail="Invalid image data")
 
+        print("DEBUG: Calling recognize_face")
         result = recognize_face(face_app, img)
+        print(f"DEBUG: recognize_face result: {result}")
         
         # If contacts are recognized, update their last_seen timestamp
         if result:

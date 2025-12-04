@@ -11,16 +11,22 @@ const FaceRecognition = () => {
     const canvasRef = useRef(null);
     const [recognitionResult, setRecognitionResult] = useState(null);
     const intervalRef = useRef(null);
+    const [debugStatus, setDebugStatus] = useState("Init...");
 
     // Start Camera
     const startCamera = async () => {
         try {
+            setDebugStatus("Requesting Camera...");
             const stream = await navigator.mediaDevices.getUserMedia({ video: true });
             if (videoRef.current) {
                 videoRef.current.srcObject = stream;
+                setDebugStatus("Camera Active");
+            } else {
+                setDebugStatus("Err: No Video Ref");
             }
         } catch (err) {
             console.error("Error accessing camera:", err);
+            setDebugStatus(`Cam Err: ${err.message}`);
         }
     };
 
@@ -97,10 +103,28 @@ const FaceRecognition = () => {
         if (intervalRef.current) clearInterval(intervalRef.current);
 
         intervalRef.current = setInterval(async () => {
-            if (!videoRef.current || videoRef.current.paused || videoRef.current.ended) return;
+            if (!videoRef.current) {
+                setDebugStatus("Wait: No Video Ref");
+                return;
+            }
+            if (videoRef.current.paused) {
+                setDebugStatus("Wait: Video Paused");
+                return;
+            }
+            if (videoRef.current.ended) {
+                setDebugStatus("Wait: Video Ended");
+                return;
+            }
+            if (videoRef.current.readyState < 2) {
+                setDebugStatus(`Wait: ReadyState ${videoRef.current.readyState}`);
+                return;
+            }
 
             const blob = await captureFrame();
-            if (!blob) return;
+            if (!blob) {
+                setDebugStatus("Wait: No Blob (Size 0?)");
+                return;
+            }
 
             const formData = new FormData();
             formData.append('file', blob, 'frame.jpg');
@@ -112,7 +136,10 @@ const FaceRecognition = () => {
                 // Handle both single object (legacy) and array (new)
                 const results = Array.isArray(data) ? data : [data];
 
-                const validResults = results.filter(r => r && r.name !== "Unknown");
+                // Filter out nulls/undefined, but KEEP "Unknown" faces
+                const validResults = results.filter(r => r);
+
+                setDebugStatus(`OK: ${validResults.length} faces (Raw: ${results.length})`);
 
                 if (validResults.length > 0) {
                     const processedResults = validResults.map(result => {
@@ -137,7 +164,8 @@ const FaceRecognition = () => {
                     }, 2000);
                 }
             } catch (err) {
-                // console.error("Recognition error", err);
+                console.error("Recognition error", err);
+                setDebugStatus(`Err: ${err.message}`);
             }
         }, 200); // Increased frequency for smoother tracking (5fps)
     };
@@ -155,7 +183,7 @@ const FaceRecognition = () => {
             <canvas ref={canvasRef} className="hidden" />
 
             {/* HUD Overlay */}
-            <HUDOverlay mode={mode} recognitionResult={recognitionResult} />
+            <HUDOverlay mode={mode} recognitionResult={recognitionResult} debugStatus={debugStatus} />
 
             {/* Controls - Only visible in Standard Mode or on hover */}
             <div className={`absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-4 transition-opacity duration-300 ${mode === 'rayban' ? 'opacity-0 hover:opacity-100' : 'opacity-100'}`}>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Battery } from 'lucide-react';
 
-const HUDOverlay = ({ mode, recognitionResult }) => {
+const HUDOverlay = ({ mode, recognitionResult, debugStatus }) => {
     const [time, setTime] = React.useState(new Date());
 
     React.useEffect(() => {
@@ -26,7 +26,9 @@ const HUDOverlay = ({ mode, recognitionResult }) => {
     const TagContent = ({ result }) => (
         <div className="bg-black/40 backdrop-blur-xl border border-white/30 p-6 rounded-xl shadow-2xl text-white min-w-[200px]">
             <div className="flex flex-col">
-                <span className="text-xs font-serif tracking-[0.2em] uppercase text-blue-300 mb-2">Identified</span>
+                <span className="text-xs font-serif tracking-[0.2em] uppercase text-blue-300 mb-2">
+                    {result.name === 'Unknown' ? 'Detected' : 'Identified'}
+                </span>
                 <h1 className="text-3xl font-serif font-bold leading-none tracking-wide mb-1">{result.name}</h1>
                 <span className="text-lg font-sans opacity-90 text-gray-200">{result.relation}</span>
             </div>
@@ -48,6 +50,13 @@ const HUDOverlay = ({ mode, recognitionResult }) => {
                         <div className="bg-black/60 backdrop-blur-md px-4 py-2 rounded-full border border-white/20 text-white flex items-center gap-2">
                             <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
                             <span className="text-sm font-serif">Live Feed</span>
+                        </div>
+                        {/* Debug Info */}
+                        <div className="bg-black/60 backdrop-blur-md px-4 py-2 rounded-full border border-white/20 text-white flex flex-col items-start">
+                            <span className="text-xs font-mono">
+                                Faces: {recognitionResult ? (Array.isArray(recognitionResult) ? recognitionResult.length : 'Obj') : 'None'}
+                            </span>
+                            {debugStatus && <span className="text-[10px] font-mono text-yellow-300">{debugStatus}</span>}
                         </div>
                     </div>
                 </div>
