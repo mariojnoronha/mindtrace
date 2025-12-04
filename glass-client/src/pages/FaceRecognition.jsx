@@ -20,6 +20,7 @@ const FaceRecognition = () => {
             const stream = await navigator.mediaDevices.getUserMedia({ video: true });
             if (videoRef.current) {
                 videoRef.current.srcObject = stream;
+                await videoRef.current.play(); // Explicitly play to avoid "paused" state
                 setDebugStatus("Camera Active");
             } else {
                 setDebugStatus("Err: No Video Ref");
