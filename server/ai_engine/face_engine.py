@@ -28,7 +28,14 @@ def detect_and_embed(app, image):
     Detect all faces and return their embedding vectors.
     """
     # InsightFace expects BGR image (OpenCV format)
+    if image is None:
+        print("DEBUG: Image is None in detect_and_embed")
+        return []
+        
+    print(f"DEBUG: Image shape: {image.shape}")
     faces = app.get(image)
+    print(f"DEBUG: Detected {len(faces)} faces")
+    
     if len(faces) == 0:
         return []
     
