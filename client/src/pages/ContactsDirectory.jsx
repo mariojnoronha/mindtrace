@@ -47,16 +47,19 @@ const ContactsDirectory = () => {
   };
 
   const handleSyncFaces = async () => {
-    try {
-      setSyncing(true);
-      const response = await faceApi.syncFromDatabase();
-      toast.success(response.data.message || 'Face recognition database synced!');
-    } catch (error) {
-      console.error("Error syncing faces:", error);
-      toast.error("Failed to sync face recognition database");
-    } finally {
+    setSyncing(true);
+    const promise = faceApi.syncFromDatabase();
+
+    toast.promise(promise, {
+      loading: 'Syncing face recognition database...',
+      success: (response) => response.data.message || 'Face recognition database synced!',
+      error: (err) => {
+        console.error("Error syncing faces:", err);
+        return "Failed to sync face recognition database";
+      }
+    }).finally(() => {
       setSyncing(false);
-    }
+    });
   };
 
   const relationshipTypes = [

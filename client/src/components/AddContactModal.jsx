@@ -50,73 +50,75 @@ const AddContactModal = ({ isOpen, onClose, onSave, navigateAfterSave = false })
   const handleSubmit = async () => {
     setIsSubmitting(true);
     
-    try {
-      let response;
+    let promise;
+    // If photos are provided, use the with-photo endpoint
+    if (formData.photos.length > 0) {
+      const formDataToSend = new FormData();
+      formDataToSend.append('name', formData.name);
+      formDataToSend.append('relationship', formData.relationship);
+      if (formData.relationship_detail) formDataToSend.append('relationship_detail', formData.relationship_detail);
+      if (formData.notes) formDataToSend.append('notes', formData.notes);
+      if (formData.phone_number) formDataToSend.append('phone_number', formData.phone_number);
+      if (formData.email) formDataToSend.append('email', formData.email);
+      if (formData.visit_frequency) formDataToSend.append('visit_frequency', formData.visit_frequency);
       
-      // If photos are provided, use the with-photo endpoint
-      if (formData.photos.length > 0) {
-        const formDataToSend = new FormData();
-        formDataToSend.append('name', formData.name);
-        formDataToSend.append('relationship', formData.relationship);
-        if (formData.relationship_detail) formDataToSend.append('relationship_detail', formData.relationship_detail);
-        if (formData.notes) formDataToSend.append('notes', formData.notes);
-        if (formData.phone_number) formDataToSend.append('phone_number', formData.phone_number);
-        if (formData.email) formDataToSend.append('email', formData.email);
-        if (formData.visit_frequency) formDataToSend.append('visit_frequency', formData.visit_frequency);
-        
-        // Use the first photo for face recognition
-        formDataToSend.append('photo', formData.photos[0]);
-        
-        response = await contactsApi.createWithPhoto(formDataToSend);
-        toast.success('Contact added with face recognition!');
-      } else {
-        // No photos, use regular endpoint
-        const contactData = {
-          name: formData.name,
-          relationship: formData.relationship,
-          relationship_detail: formData.relationship_detail,
-          notes: formData.notes,
-          phone_number: formData.phone_number,
-          email: formData.email,
-          visit_frequency: formData.visit_frequency,
-          avatar: formData.name.substring(0, 2).toUpperCase(),
-          color: 'indigo'
-        };
-        
-        response = await contactsApi.create(contactData);
-        toast.success('Contact added successfully!');
-      }
+      // Use the first photo for face recognition
+      formDataToSend.append('photo', formData.photos[0]);
       
-      if (onSave) {
-        onSave(response.data);
-      }
+      promise = contactsApi.createWithPhoto(formDataToSend);
+    } else {
+      // No photos, use regular endpoint
+      const contactData = {
+        name: formData.name,
+        relationship: formData.relationship,
+        relationship_detail: formData.relationship_detail,
+        notes: formData.notes,
+        phone_number: formData.phone_number,
+        email: formData.email,
+        visit_frequency: formData.visit_frequency,
+        avatar: formData.name.substring(0, 2).toUpperCase(),
+        color: 'indigo'
+      };
       
-      // Reset form
-      setFormData({
-        name: '',
-        relationship: 'family',
-        relationship_detail: '',
-        notes: '',
-        phone_number: '',
-        email: '',
-        visit_frequency: '',
-        photos: []
-      });
-      setFormStep(1);
-      setHasUnsavedChanges(false);
-      
-      // Navigate to contacts page if requested (before closing modal)
-      if (navigateAfterSave) {
-        navigate('/dashboard/contacts');
-      }
-      
-      onClose();
-    } catch (error) {
-      console.error('Error creating contact:', error);
-      toast.error(error.response?.data?.detail || 'Failed to add contact');
-    } finally {
-      setIsSubmitting(false);
+      promise = contactsApi.create(contactData);
     }
+
+    toast.promise(promise, {
+      loading: 'Adding contact...',
+      success: (response) => {
+        if (onSave) {
+          onSave(response.data);
+        }
+        
+        // Reset form
+        setFormData({
+          name: '',
+          relationship: 'family',
+          relationship_detail: '',
+          notes: '',
+          phone_number: '',
+          email: '',
+          visit_frequency: '',
+          photos: []
+        });
+        setFormStep(1);
+        setHasUnsavedChanges(false);
+        
+        // Navigate to contacts page if requested (before closing modal)
+        if (navigateAfterSave) {
+          navigate('/dashboard/contacts');
+        }
+        
+        onClose();
+        return formData.photos.length > 0 ? 'Contact added with face recognition!' : 'Contact added successfully!';
+      },
+      error: (err) => {
+        console.error('Error creating contact:', err);
+        return err.response?.data?.detail || 'Failed to add contact';
+      }
+    }).finally(() => {
+      setIsSubmitting(false);
+    });
   };
 
   const handleClose = () => {

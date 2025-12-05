@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router'
+import { createBrowserRouter, RouterProvider, createRoutesFromElements, Route, Outlet } from 'react-router'
 import { Toaster } from 'react-hot-toast'
 
 import Landing from './pages/Landing'
@@ -22,43 +22,52 @@ import HelpSupport from './pages/HelpSupport'
 import ProtectedRoute from './components/ProtectedRoute'
 import PublicRoute from './components/PublicRoute'
 
-const App = () => {
+const RootLayout = () => {
   return (
     <>
-      <Routes>
-        <Route path='/' element={<Landing />} />
-
-        <Route path='/login' element={<PublicRoute><Login /></PublicRoute>} />
-        <Route path='/signup' element={<PublicRoute><Signup /></PublicRoute>} />
-        <Route path='/forgot-password' element={<PublicRoute><ForgotPassword /></PublicRoute>} />
-        <Route path='/reset-password' element={<PublicRoute><ResetPassword /></PublicRoute>} />
-        <Route path='/auth/callback' element={<AuthCallback />} />
-
-        {/* Dashboard parent route */}
-        <Route
-          path='/dashboard'
-          element={
-            <ProtectedRoute>
-              <DashboardLayout />
-            </ProtectedRoute>
-          }
-        >
-          {/* Nested dashboard pages */}
-          <Route index element={<DashboardHome />} />
-          <Route path='interactions' element={<InteractionHistory />} />
-          <Route path='contacts' element={<ContactsDirectory />} />
-          <Route path='alerts' element={<AlertsNotifications />} />
-          <Route path='reminders' element={<Reminders />} />
-          <Route path='sos-alerts' element={<SOSPage />} />
-          <Route path='sos' element={<SOSSettings />} />
-          <Route path='settings' element={<ProfileSettings />} />
-          <Route path='help' element={<HelpSupport />} />
-        </Route>
-      </Routes>
-
+      <Outlet />
       <Toaster position="top-right" />
     </>
   )
+}
+
+const router = createBrowserRouter(
+  createRoutesFromElements(
+    <Route element={<RootLayout />}>
+      <Route path='/' element={<Landing />} />
+
+      <Route path='/login' element={<PublicRoute><Login /></PublicRoute>} />
+      <Route path='/signup' element={<PublicRoute><Signup /></PublicRoute>} />
+      <Route path='/forgot-password' element={<PublicRoute><ForgotPassword /></PublicRoute>} />
+      <Route path='/reset-password' element={<PublicRoute><ResetPassword /></PublicRoute>} />
+      <Route path='/auth/callback' element={<AuthCallback />} />
+
+      {/* Dashboard parent route */}
+      <Route
+        path='/dashboard'
+        element={
+          <ProtectedRoute>
+            <DashboardLayout />
+          </ProtectedRoute>
+        }
+      >
+        {/* Nested dashboard pages */}
+        <Route index element={<DashboardHome />} />
+        <Route path='interactions' element={<InteractionHistory />} />
+        <Route path='contacts' element={<ContactsDirectory />} />
+        <Route path='alerts' element={<AlertsNotifications />} />
+        <Route path='reminders' element={<Reminders />} />
+        <Route path='sos-alerts' element={<SOSPage />} />
+        <Route path='sos' element={<SOSSettings />} />
+        <Route path='settings' element={<ProfileSettings />} />
+        <Route path='help' element={<HelpSupport />} />
+      </Route>
+    </Route>
+  )
+)
+
+const App = () => {
+  return <RouterProvider router={router} />
 }
 
 export default App;
