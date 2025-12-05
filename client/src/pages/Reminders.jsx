@@ -37,26 +37,42 @@ const Reminders = () => {
   }, [selectedType]);
 
   const handleToggleComplete = async (id) => {
-    try {
-      await remindersApi.toggleComplete(id);
-      setReminders(reminders.map(reminder => 
-        reminder.id === id ? { ...reminder, completed: !reminder.completed } : reminder
-      ));
-    } catch (error) {
-      console.error("Error toggling reminder:", error);
-      toast.error("Failed to update reminder");
-    }
+    const promise = remindersApi.toggleComplete(id);
+    
+    // We can use a simpler toast or no toast for this frequent action, 
+    // but user asked for "every" operation. 
+    // However, for toggle, a loading toast might be annoying if it blocks UI or is too slow.
+    // But let's stick to the request.
+    
+    toast.promise(promise, {
+      loading: 'Updating reminder...',
+      success: () => {
+        setReminders(reminders.map(reminder => 
+          reminder.id === id ? { ...reminder, completed: !reminder.completed } : reminder
+        ));
+        return 'Reminder updated';
+      },
+      error: (err) => {
+        console.error("Error toggling reminder:", err);
+        return "Failed to update reminder";
+      }
+    });
   };
 
   const handleDeleteReminder = async () => {
-    try {
-      await remindersApi.delete(deleteModal.reminderId);
-      setReminders(reminders.filter(reminder => reminder.id !== deleteModal.reminderId));
-      toast.success("Reminder deleted");
-    } catch (error) {
-      console.error("Error deleting reminder:", error);
-      toast.error("Failed to delete reminder");
-    }
+    const promise = remindersApi.delete(deleteModal.reminderId);
+
+    toast.promise(promise, {
+      loading: 'Deleting reminder...',
+      success: () => {
+        setReminders(reminders.filter(reminder => reminder.id !== deleteModal.reminderId));
+        return "Reminder deleted";
+      },
+      error: (err) => {
+        console.error("Error deleting reminder:", err);
+        return "Failed to delete reminder";
+      }
+    });
   };
 
   const handleAddReminder = () => {

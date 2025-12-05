@@ -59,35 +59,37 @@ const EditContactModal = ({ isOpen, onClose, contact, onUpdate }) => {
   const handleSubmit = async () => {
     setIsSubmitting(true);
     
-    try {
-      const contactData = {
-        name: formData.name,
-        relationship: formData.relationship,
-        relationship_detail: formData.relationship_detail,
-        notes: formData.notes,
-        phone_number: formData.phone_number,
-        email: formData.email,
-        visit_frequency: formData.visit_frequency,
-        avatar: contact.avatar || formData.name.substring(0, 2).toUpperCase(),
-        color: contact.color || 'indigo'
-      };
-      
-      await contactsApi.update(contact.id, contactData);
-      toast.success('Contact updated successfully!');
-      
-      setHasUnsavedChanges(false);
-      
-      if (onUpdate) {
-        onUpdate();
+    const contactData = {
+      name: formData.name,
+      relationship: formData.relationship,
+      relationship_detail: formData.relationship_detail,
+      notes: formData.notes,
+      phone_number: formData.phone_number,
+      email: formData.email,
+      visit_frequency: formData.visit_frequency,
+      avatar: contact.avatar || formData.name.substring(0, 2).toUpperCase(),
+      color: contact.color || 'indigo'
+    };
+    
+    const promise = contactsApi.update(contact.id, contactData);
+
+    toast.promise(promise, {
+      loading: 'Updating contact...',
+      success: () => {
+        setHasUnsavedChanges(false);
+        if (onUpdate) {
+          onUpdate();
+        }
+        onClose();
+        return 'Contact updated successfully!';
+      },
+      error: (err) => {
+        console.error('Error updating contact:', err);
+        return err.response?.data?.detail || 'Failed to update contact';
       }
-      
-      onClose();
-    } catch (error) {
-      console.error('Error updating contact:', error);
-      toast.error(error.response?.data?.detail || 'Failed to update contact');
-    } finally {
+    }).finally(() => {
       setIsSubmitting(false);
-    }
+    });
   };
 
   const handleClose = () => {

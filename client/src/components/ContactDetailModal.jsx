@@ -32,16 +32,21 @@ const ContactDetailModal = ({ contact, onClose, onEdit }) => {
   };
 
   const handleDelete = async () => {
-    try {
-      await contactsApi.delete(contact.id);
-      toast.success("Contact deleted successfully");
-      onClose();
-      // Trigger a refresh in the parent component
-      window.location.reload();
-    } catch (error) {
-      console.error("Error deleting contact:", error);
-      toast.error("Failed to delete contact");
-    }
+    const promise = contactsApi.delete(contact.id);
+
+    toast.promise(promise, {
+      loading: 'Deleting contact...',
+      success: () => {
+        onClose();
+        // Trigger a refresh in the parent component
+        window.location.reload();
+        return "Contact deleted successfully";
+      },
+      error: (err) => {
+        console.error("Error deleting contact:", err);
+        return "Failed to delete contact";
+      }
+    });
   };
 
   return (

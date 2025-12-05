@@ -51,35 +51,39 @@ const AddReminderModal = ({ isOpen, onClose, onSave, navigateAfterSave = false }
     e.preventDefault();
     setIsSubmitting(true);
     
-    try {
-      const response = await remindersApi.create(formData);
-      toast.success('Reminder created successfully!');
-      
-      if (onSave) {
-        onSave(response.data);
+    const promise = remindersApi.create(formData);
+
+    toast.promise(promise, {
+      loading: 'Creating reminder...',
+      success: (response) => {
+        if (onSave) {
+          onSave(response.data);
+        }
+        
+        setFormData({
+          title: '',
+          type: 'medication',
+          time: '',
+          recurrence: 'daily',
+          notes: ''
+        });
+        setHasUnsavedChanges(false);
+        
+        // Navigate to reminders page if requested (before closing modal)
+        if (navigateAfterSave) {
+          navigate('/dashboard/reminders');
+        }
+        
+        onClose();
+        return 'Reminder created successfully!';
+      },
+      error: (err) => {
+        console.error('Error creating reminder:', err);
+        return err.response?.data?.detail || 'Failed to create reminder';
       }
-      
-      setFormData({
-        title: '',
-        type: 'medication',
-        time: '',
-        recurrence: 'daily',
-        notes: ''
-      });
-      setHasUnsavedChanges(false);
-      
-      // Navigate to reminders page if requested (before closing modal)
-      if (navigateAfterSave) {
-        navigate('/dashboard/reminders');
-      }
-      
-      onClose();
-    } catch (error) {
-      console.error('Error creating reminder:', error);
-      toast.error(error.response?.data?.detail || 'Failed to create reminder');
-    } finally {
+    }).finally(() => {
       setIsSubmitting(false);
-    }
+    });
   };
 
   const handleClose = () => {

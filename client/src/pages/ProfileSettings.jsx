@@ -86,39 +86,45 @@ const ProfileSettings = () => {
   };
 
   const handleSave = async (shouldNavigate = false) => {
-    try {
-      setSaving(true);
-      setMessage({ type: '', text: '' });
-      
-      await userApi.updateProfile({
-        full_name: profile.full_name,
-        email: profile.email,
-      });
-      
-      // Update original profile to match saved state
-      setOriginalProfile({
-        full_name: profile.full_name,
-        email: profile.email,
-      });
-      
-      setHasUnsavedChanges(false);
-      setMessage({ type: 'success', text: 'Profile updated successfully!' });
-      setTimeout(() => setMessage({ type: '', text: '' }), 3000);
+    setSaving(true);
+    setMessage({ type: '', text: '' });
+    
+    const promise = userApi.updateProfile({
+      full_name: profile.full_name,
+      email: profile.email,
+    });
 
-      // If this save was triggered by navigation, proceed with it
-      if (shouldNavigate && blockerRef.current) {
-        blockerRef.current.proceed();
-        blockerRef.current = null;
+    toast.promise(promise, {
+      loading: 'Saving profile...',
+      success: () => {
+        // Update original profile to match saved state
+        setOriginalProfile({
+          full_name: profile.full_name,
+          email: profile.email,
+        });
+        
+        setHasUnsavedChanges(false);
+        setMessage({ type: 'success', text: 'Profile updated successfully!' });
+        setTimeout(() => setMessage({ type: '', text: '' }), 3000);
+
+        // If this save was triggered by navigation, proceed with it
+        if (shouldNavigate && blockerRef.current) {
+          blockerRef.current.proceed();
+          blockerRef.current = null;
+        }
+        return 'Profile updated successfully!';
+      },
+      error: (err) => {
+        console.error('Error updating profile:', err);
+        setMessage({ 
+          type: 'error', 
+          text: err.response?.data?.detail || 'Failed to update profile' 
+        });
+        return err.response?.data?.detail || 'Failed to update profile';
       }
-    } catch (error) {
-      console.error('Error updating profile:', error);
-      setMessage({ 
-        type: 'error', 
-        text: error.response?.data?.detail || 'Failed to update profile' 
-      });
-    } finally {
+    }).finally(() => {
       setSaving(false);
-    }
+    });
   };
 
   const handleDiscard = () => {
@@ -148,29 +154,35 @@ const ProfileSettings = () => {
       return;
     }
 
-    try {
-      setSaving(true);
-      setMessage({ type: '', text: '' });
-      
-      await userApi.changePassword({
-        current_password: passwordData.current_password,
-        new_password: passwordData.new_password,
-      });
-      
-      setMessage({ type: 'success', text: 'Password changed successfully!' });
-      setShowPasswordModal(false);
-      setPasswordData({ current_password: '', new_password: '', confirm_password: '' });
-      setShowPasswords({ current: false, new: false, confirm: false });
-      setTimeout(() => setMessage({ type: '', text: '' }), 3000);
-    } catch (error) {
-      console.error('Error changing password:', error);
-      setMessage({ 
-        type: 'error', 
-        text: error.response?.data?.detail || 'Failed to change password' 
-      });
-    } finally {
+    setSaving(true);
+    setMessage({ type: '', text: '' });
+    
+    const promise = userApi.changePassword({
+      current_password: passwordData.current_password,
+      new_password: passwordData.new_password,
+    });
+
+    toast.promise(promise, {
+      loading: 'Changing password...',
+      success: () => {
+        setMessage({ type: 'success', text: 'Password changed successfully!' });
+        setShowPasswordModal(false);
+        setPasswordData({ current_password: '', new_password: '', confirm_password: '' });
+        setShowPasswords({ current: false, new: false, confirm: false });
+        setTimeout(() => setMessage({ type: '', text: '' }), 3000);
+        return 'Password changed successfully!';
+      },
+      error: (err) => {
+        console.error('Error changing password:', err);
+        setMessage({ 
+          type: 'error', 
+          text: err.response?.data?.detail || 'Failed to change password' 
+        });
+        return err.response?.data?.detail || 'Failed to change password';
+      }
+    }).finally(() => {
       setSaving(false);
-    }
+    });
   };
 
   const handleDeleteAccount = async () => {
@@ -179,17 +191,24 @@ const ProfileSettings = () => {
       return;
     }
 
-    try {
-      await userApi.deleteAccount();
-      localStorage.removeItem('token');
-      window.location.href = '/login';
-    } catch (error) {
-      console.error('Error deleting account:', error);
-      setMessage({ 
-        type: 'error', 
-        text: error.response?.data?.detail || 'Failed to delete account' 
-      });
-    }
+    const promise = userApi.deleteAccount();
+
+    toast.promise(promise, {
+      loading: 'Deleting account...',
+      success: () => {
+        localStorage.removeItem('token');
+        window.location.href = '/login';
+        return 'Account deleted successfully';
+      },
+      error: (err) => {
+        console.error('Error deleting account:', err);
+        setMessage({ 
+          type: 'error', 
+          text: err.response?.data?.detail || 'Failed to delete account' 
+        });
+        return err.response?.data?.detail || 'Failed to delete account';
+      }
+    });
   };
 
   const handleImageUpload = async (event) => {
@@ -208,55 +227,69 @@ const ProfileSettings = () => {
       return;
     }
 
-    try {
-      setUploadingImage(true);
-      setMessage({ type: '', text: '' });
+    setUploadingImage(true);
+    setMessage({ type: '', text: '' });
 
-      const formData = new FormData();
-      formData.append('photo', file);
+    const formData = new FormData();
+    formData.append('photo', file);
 
-      const response = await userApi.uploadProfileImage(formData);
-      setProfile(response.data);
-      setMessage({ type: 'success', text: 'Profile image updated successfully!' });
-      setTimeout(() => setMessage({ type: '', text: '' }), 3000);
+    const promise = userApi.uploadProfileImage(formData);
 
-      // Dispatch event to update sidebar and header
-      window.dispatchEvent(new CustomEvent('profileUpdated', { detail: response.data }));
-    } catch (error) {
-      console.error('Error uploading image:', error);
-      setMessage({ 
-        type: 'error', 
-        text: error.response?.data?.detail || 'Failed to upload image' 
-      });
-    } finally {
+    toast.promise(promise, {
+      loading: 'Uploading image...',
+      success: (response) => {
+        setProfile(response.data);
+        setMessage({ type: 'success', text: 'Profile image updated successfully!' });
+        setTimeout(() => setMessage({ type: '', text: '' }), 3000);
+
+        // Dispatch event to update sidebar and header
+        window.dispatchEvent(new CustomEvent('profileUpdated', { detail: response.data }));
+        return 'Profile image updated successfully!';
+      },
+      error: (err) => {
+        console.error('Error uploading image:', err);
+        setMessage({ 
+          type: 'error', 
+          text: err.response?.data?.detail || 'Failed to upload image' 
+        });
+        return err.response?.data?.detail || 'Failed to upload image';
+      }
+    }).finally(() => {
       setUploadingImage(false);
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
-    }
+    });
   };
 
   const handleDeleteImage = async () => {
-    try {
-      setUploadingImage(true);
-      setMessage({ type: '', text: '' });
+    setUploadingImage(true);
+    setMessage({ type: '', text: '' });
 
-      const response = await userApi.deleteProfileImage();
-      setProfile(response.data);
-      setMessage({ type: 'success', text: 'Profile image removed successfully!' });
-      setTimeout(() => setMessage({ type: '', text: '' }), 3000);
+    const promise = userApi.deleteProfileImage();
 
-      // Dispatch event to update sidebar and header
-      window.dispatchEvent(new CustomEvent('profileUpdated', { detail: response.data }));
-    } catch (error) {
-      console.error('Error deleting image:', error);
-      setMessage({ 
-        type: 'error', 
-        text: error.response?.data?.detail || 'Failed to delete image' 
-      });
-    } finally {
+    toast.promise(promise, {
+      loading: 'Deleting image...',
+      success: (response) => {
+        setProfile(response.data);
+        setMessage({ type: 'success', text: 'Profile image removed successfully!' });
+        setTimeout(() => setMessage({ type: '', text: '' }), 3000);
+
+        // Dispatch event to update sidebar and header
+        window.dispatchEvent(new CustomEvent('profileUpdated', { detail: response.data }));
+        return 'Profile image removed successfully!';
+      },
+      error: (err) => {
+        console.error('Error deleting image:', err);
+        setMessage({ 
+          type: 'error', 
+          text: err.response?.data?.detail || 'Failed to delete image' 
+        });
+        return err.response?.data?.detail || 'Failed to delete image';
+      }
+    }).finally(() => {
       setUploadingImage(false);
-    }
+    });
   };
 
   const formatDate = (dateString) => {

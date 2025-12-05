@@ -40,19 +40,25 @@ const InteractionHistory = () => {
 
   const handleToggleStar = async (e, id) => {
     e.stopPropagation();
-    try {
-      await interactionsApi.toggleStar(id);
-      // Optimistic update or refetch
-      setInteractions(interactions.map(i => 
-        i.id === id ? { ...i, starred: !i.starred } : i
-      ));
-      if (selectedInteraction && selectedInteraction.id === id) {
-        setSelectedInteraction({ ...selectedInteraction, starred: !selectedInteraction.starred });
+    const promise = interactionsApi.toggleStar(id);
+
+    toast.promise(promise, {
+      loading: 'Updating interaction...',
+      success: () => {
+        // Optimistic update or refetch
+        setInteractions(interactions.map(i => 
+          i.id === id ? { ...i, starred: !i.starred } : i
+        ));
+        if (selectedInteraction && selectedInteraction.id === id) {
+          setSelectedInteraction({ ...selectedInteraction, starred: !selectedInteraction.starred });
+        }
+        return "Interaction updated";
+      },
+      error: (err) => {
+        console.error("Error toggling star:", err);
+        return "Failed to update interaction";
       }
-    } catch (error) {
-      console.error("Error toggling star:", error);
-      toast.error("Failed to update interaction");
-    }
+    });
   };
 
   const getMoodColor = (mood) => {
